@@ -1,35 +1,40 @@
-define(function () {
+define(function() {
   "use strict";
 
+  var UNDEFINED;
+  var FALSE = false;
+  var STACK = "stack";
   var CAPTURE_STACK_TRACE = Error.captureStackTrace;
 
-  return function (name) {
+  return function(name) {
     var _Error = CAPTURE_STACK_TRACE
-      ? function (message) {
+      ? function(message) {
         var me = this;
 
         CAPTURE_STACK_TRACE(me, _Error);
 
         Object.defineProperties(me, {
           "message": {
-            "enumerable": false,
+            "enumerable": FALSE,
             "value": message
           }
         });
       }
-      : function (message) {
+      : function(message) {
         var error = new Error(message);
 
         Object.defineProperties(this, {
           "message": {
-            "enumerable": false,
+            "enumerable": FALSE,
             "value": message
           },
 
           "stack": {
-            "enumerable": false,
-            "get": function () {
-              return error.stack.replace(/.*\n/, "");
+            "enumerable": FALSE,
+            "get": function() {
+              return error.hasOwnProperty(STACK)
+                ? error[STACK].replace(/.*\n/, "")
+                : UNDEFINED;
             }
           }
         });
@@ -37,11 +42,11 @@ define(function () {
 
     _Error.prototype = Object.create(Error.prototype, {
       "name": {
-        "enumerable": false,
+        "enumerable": FALSE,
         "value": name
       },
       "constructor": {
-        "enumerable": false,
+        "enumerable": FALSE,
         "value": _Error
       }
     });
